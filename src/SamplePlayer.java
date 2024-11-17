@@ -36,15 +36,29 @@ public class SamplePlayer extends SnakePlayer {
         Cell head = gameState.snake.peekFirst();
         List<Cell> path = bfs(head, food);
 
-        // Ha talált útvonalat, visszaadja a következő lépés irányát, ha nem akkor random-ot ad
+        // Ha talált útvonalat, visszaadja a következő lépés irányát, ha nem akkor megkeres egy biztonságos random-ot
+        // és azt adja vissza
         if (path != null && path.size() > 1) {
             Cell nextCell = path.get(1);
             return head.directionTo(nextCell);
         } else {
+            LinkedList<Cell> neighbours;
+            neighbours = head.neighbors();
+
+            for (Cell cell : neighbours) {
+                if(isSafeMove(cell)){
+                    return cell.directionTo(head);
+                }
+            }
+
             Direction action = SnakeGame.DIRECTIONS[random.nextInt(SnakeGame.DIRECTIONS.length)];
             return action;
        }
 
+    }
+
+    private boolean isSafeMove(Cell nextCell) {
+        return gameState.isOnBoard(nextCell) && gameState.getValueAt(nextCell) != SnakeGame.SNAKE;
     }
 
     /**
